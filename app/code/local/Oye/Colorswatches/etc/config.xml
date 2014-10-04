@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Oye_Colorswatches>
+            <version>1.0.0</version>
+        </Oye_Colorswatches>
+    </modules>
+    <global>
+        <blocks>
+            <oye_colorswatches>
+                <class>Oye_Colorswatches_Block</class>
+            </oye_colorswatches>
+        </blocks>
+        <helpers>
+            <oye_colorswatches>
+                <class>Oye_Colorswatches_Helper</class>
+            </oye_colorswatches>
+        </helpers>
+    </global>
+    <frontend>
+        <layout>
+            <updates>
+                <oye_colorswatches>
+                    <file>oye_colorswatches.xml</file>
+                </oye_colorswatches>                
+            </updates>
+        </layout>
+    </frontend>
+</config>

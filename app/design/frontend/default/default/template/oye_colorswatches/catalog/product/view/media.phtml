@@ -1,0 +1,91 @@
+<?php
+    $_product = $this->getProduct();
+    $_helper = $this->helper('catalog/output');
+?>
+<?php 
+  $SimpleProducts = array();
+  if ($_product->getTypeId() == 'configurable') {
+    $_product = Mage::getModel('catalog/product')->load($_product->getId());
+    $SimpleProducts = Mage::getModel('catalog/product_type_configurable')
+                    ->getUsedProducts(null,$_product);
+  }
+?>
+<input type="hidden" id="configurable-product-name" value="<?php echo strtolower(str_replace(' ', '-', $_product->getName())) ;?>" />
+<div class="product-image product-image-zoom">
+    <div class="product-image-gallery">
+        <img id="image-main"
+             class="gallery-image visible"
+             src="<?php echo $this->helper('catalog/image')->init($_product, 'image') ?>"
+             alt="<?php echo $this->escapeHtml($this->getImageLabel()) ?>"
+             title="<?php echo $this->escapeHtml($this->getImageLabel()); ?>" />
+
+        <?php
+            $i=0;
+            foreach ($this->getGalleryImages() as $_image):
+                $_imageUrl = $this->helper('catalog/image')
+                                  ->init($_product, 'image', $_image->getFile())
+                                  ->keepFrame(false)
+                                  ->constrainOnly(true)
+                                  ->resize(1200);
+        ?>
+            <img id="image-<?php echo $i; ?>"
+                 class="gallery-image"
+                 src="<?php echo $_imageUrl; ?>"
+                 data-zoom-image="<?php echo  $_imageUrl; ?>" />
+        <?php
+            $i++;
+            endforeach;
+        ?>
+        <?php foreach($SimpleProducts as $SimpleProduct) { ?>
+            <?php 
+            
+              $SimpleProduct = Mage::getModel('catalog/product')->load($SimpleProduct->getId()); 
+            ?>
+            <?php $_imageUrl  = Mage::helper('catalog/image')->init($SimpleProduct, 'image')->resize(1200);
+
+          ?>
+            <img id="image-<?php echo $i; ?>"
+                 class="gallery-image"
+                 src="<?php echo $_imageUrl; ?>"
+                 data-zoom-image="<?php echo  $_imageUrl; ?>" />
+            <?php $i++; ?>
+        <?php } ?>
+    </div>
+</div>
+
+<?php if (count($this->getGalleryImages()) > 0): ?>
+<div class="more-views">
+    <h2><?php echo $this->__('More Views') ?></h2>
+    <ul class="product-image-thumbs">
+    <?php $i=0; foreach ($this->getGalleryImages() as $_image): ?>
+        <?php
+        if (($filterClass = $this->getGalleryFilterHelper()) && ($filterMethod = $this->getGalleryFilterMethod()) && !Mage::helper($filterClass)->$filterMethod($_product, $_image)):
+            continue;
+        endif;
+        ?>
+        <li>
+            <a  class="thumb-link" href="#" title="<?php echo $this->escapeHtml($_image->getLabel()) ?>" data-image-index="<?php echo $i; ?>">
+                <img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(75); ?>"
+                     width="75" height="75" alt="<?php echo $this->escapeHtml($_image->getLabel()) ?>" />
+            </a>
+        </li>
+    <?php $i++; endforeach; ?>
+    <?php foreach($SimpleProducts as $SimpleProduct) { ?>
+        <?php 
+              $SimpleProduct = Mage::getModel('catalog/product')->load($SimpleProduct->getId()); 
+        ?>
+        <?php 
+          $ProductName = strtolower(str_replace(' ', '-', $SimpleProduct->getName()));
+        ?>
+        <li style="display:none">
+        <a id="<?php echo $ProductName; ?>" class="thumb-link" href="#" title="<?php echo $ProductName; ?>" data-image-index="<?php echo $i; ?>">
+                <img src="<?php echo $this->helper('catalog/image')->init($SimpleProduct, 'thumbnail')->resize(75); ?>"
+                     width="75" height="75" alt="" />
+            </a>
+        </li>
+    <?php $i++; } ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+<?php echo $this->getChildHtml('after'); ?>
